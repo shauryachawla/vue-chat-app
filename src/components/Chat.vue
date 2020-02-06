@@ -3,7 +3,7 @@
     <h2 class="teal-text center">Ninja Chat</h2>
     <div class="card">
       <div class="card-content">
-        <ul class="messages">
+        <ul class="messages" v-chat-scroll>
           <li v-for="message in messages" :key="message.id">
             <span class="teal-text">{{message.name}}</span>
             <span class="text-darken-3 grey-text">{{message.content}}</span>
@@ -21,6 +21,7 @@
 <script>
 import NewMessage from "@/components/NewMessage";
 import db from "@/firebase/init";
+import moment from "moment";
 export default {
   props: ["name"],
   name: "Chat",
@@ -31,19 +32,22 @@ export default {
     };
   },
   created() {
-    db.collection("messages").orderBy('timestamp').onSnapshot(snapshot => {
-      snapshot.docChanges().forEach(change => {
-        if (change.type == "added") {
-          let doc = change.doc;
-          this.messages.push({
-            id: doc.id,
-            name: doc.data().name,
-            content: doc.data().content,
-            timestamp: doc.data().timestamp
-          });
-        }
+    db.collection("messages")
+      .orderBy("timestamp")
+      .onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(change => {
+          if (change.type == "added") {
+            // console.log(change);
+            let doc = change.doc;
+            this.messages.push({
+              id: doc.id,
+              name: doc.data().name,
+              content: doc.data().content,
+              timestamp: moment(doc.data().timestamp).calendar()
+            });
+          }
+        });
       });
-    });
   }
 };
 </script>
@@ -58,5 +62,20 @@ export default {
 }
 .chat .time {
   display: block;
+  font-size: 0.8em;
+}
+.messages {
+  max-height: 300px;
+  overflow: auto;
+}
+
+.messages::-webkit-scrollbar {
+  width: 3px;
+}
+.messages::-webkit-scrollbar-track {
+  background-color: #ddd;
+}
+.messages::-webkit-scrollbar-thumb {
+  background-color: #aaa;
 }
 </style>
