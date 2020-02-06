@@ -9,6 +9,7 @@ Vue.use(Router)
 Vue.config.productionTip = false
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',

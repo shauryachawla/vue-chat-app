@@ -27,7 +27,7 @@ export default {
   },
   data() {
     return {
-      name: "shaurya",
+      name: null,
       feedback: null
     };
   }
